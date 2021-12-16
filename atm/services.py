@@ -64,19 +64,18 @@ def count_bill_in_withdraw_amount(withdraw_amount, amount):
 
 
 def break_down_of_bills(withdraw_amount):
-    #format [count the bill, amount]
     count_bill_per_amount = [
-      [0,1000], 
-      [0,500], 
-      [0,200], 
-      [0,100], 
-      [0,50], 
-      [0,20]
+      {'count':0, 'amount':1000}, 
+      {'count':0, 'amount':500}, 
+      {'count':0, 'amount':200}, 
+      {'count':0, 'amount':100}, 
+      {'count':0, 'amount':50}, 
+      {'count':0, 'amount':20}
     ]
 
     for value in count_bill_per_amount:
-        result = count_bill_in_withdraw_amount(withdraw_amount, value[1])
-        value[0] = result[0]
+        result = count_bill_in_withdraw_amount(withdraw_amount, value['amount'])
+        value['count'] = result[0]
         withdraw_amount = result[1]
     
     if  withdraw_amount > 0:

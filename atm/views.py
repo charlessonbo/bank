@@ -66,14 +66,30 @@ class WithdrawPage(LoginRequiredMixin, FormView):
     template_name = 'atm/withdraw.html'
     form_class = AmountForm
     success_url = reverse_lazy('withdraw')
+    plus_context = dict()
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.plus_context:
+            context['bill_count'] = self.plus_context['bill_count']
+        return context
 
     def form_valid(self, form):
         bill_count = break_down_of_bills(float(form.cleaned_data['amount']))
-        if bill_count:
-            # message = withdraw(self.request.user, form.cleaned_data['amount'])
-            # messages.success(self.request, message)
-            print(bill_count)
+        
+        if not bill_count:
+            messages.success(self.request, 'Failed to break down the bills.')
+            self.plus_context['bill_count'] = None
+            return super().form_valid(form)
+
+        message = withdraw(self.request.user, form.cleaned_data['amount'])
+        if not message == 'insufficient balance.':
+            messages.success(self.request, message)
+            self.plus_context['bill_count'] = bill_count
+      
         return super().form_valid(form)
+
+    
         
     
 
