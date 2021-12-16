@@ -13,6 +13,8 @@ from django.shortcuts import redirect
 from django.db import transaction
 from .models import Balance
 from .forms import AmountForm
+from .services import get_balance_by_user
+from .services import create_new_balance_deposit, update_balance_by_deposit, deposit_balance
 
 
 class CustomLoginView(LoginView):
@@ -37,30 +39,25 @@ class RegisterPage(FormView):
         return super(RegisterPage, self).form_valid(form)
 
 
-class TaskList(LoginRequiredMixin, TemplateView):
+class Services(LoginRequiredMixin, TemplateView):
     template_name = "atm/services.html"
+
+
+class CheckBalance(LoginRequiredMixin, View):
+    template = "atm/check-balance.html"
+
+    def get(self, request):
+        user_balance = get_balance_by_user(self.request.user)
+        return render(request, self.template, {'user_balance': user_balance})
 
 
 class Deposit(LoginRequiredMixin, FormView):
     template_name = 'atm/deposit.html'
     form_class = AmountForm
-    success_url = reverse_lazy('services')
+    success_url = reverse_lazy('checkbalance')
 
     def form_valid(self, form):
-        user_balance = None
-
-        try:
-            user_balance = Balance.objects.get(user=self.request.user)
-        except Balance.DoesNotExist:
-            pass
-     
-        if not user_balance:
-            user_balance = Balance(user=self.request.user, balance=float(form.cleaned_data['amount']))
-            user_balance.save()
-            return super().form_valid(form)
-        
-        user_balance.balance = float(user_balance.balance) + float(form.cleaned_data['amount'])
-        user_balance.save()
+        deposit_balance(self.request.user, form.cleaned_data['amount'])
         return super().form_valid(form)
         
     
