@@ -76,17 +76,17 @@ class WithdrawPage(LoginRequiredMixin, FormView):
 
     def form_valid(self, form):
         bill_count = break_down_of_bills(float(form.cleaned_data['amount']))
-        
+
         if not bill_count:
-            messages.success(self.request, 'Failed to break down the bills.')
             self.plus_context['bill_count'] = None
+            messages.success(self.request, 'Failed to break down the bills.')
             return super().form_valid(form)
 
         message = withdraw(self.request.user, form.cleaned_data['amount'])
         if not message == 'insufficient balance.':
-            messages.success(self.request, message)
             self.plus_context['bill_count'] = bill_count
-      
+         
+        messages.success(self.request, message)
         return super().form_valid(form)
 
     

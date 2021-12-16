@@ -22,21 +22,24 @@
         <input class="button" type="submit" value="Submit">
     </form>
 
-    {% for bill in bill_count %}
-        <div class="card">
-            <div class="container">
-              <h4><b>Amount: {{bill.amount}}</b></h4>
-              <p>Quantity: {{bill.count}}</p>
+    {% if bill_count %}
+        <br>Cash Received<hr>
+        {% for bill in bill_count %}
+            <div class="card">
+                <div class="container">
+                <h4><b>Amount: {{bill.amount}}</b></h4>
+                <p>Quantity: {{bill.count}}</p>
+                </div>
             </div>
-        </div>
-    {% endfor %}
+        {% endfor %}
+    {% endif %}
 </div>
 
 <script>
     $(document).ready(function() {
         setTimeout(function() {
-            $(".message").fadeOut(5000);
-        }, 5000);
+            $(".message").fadeOut(3000);
+        }, 3000);
     });
 </script>
 {% endblock content %}
