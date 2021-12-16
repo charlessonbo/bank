@@ -17,7 +17,7 @@ from .services import get_balance_by_user
 from .services import create_new_balance_deposit, update_balance_by_deposit, deposit_balance
 
 
-class CustomLoginView(LoginView):
+class LoginPage(LoginView):
     template_name = 'atm/login.html'
     fields = '__all__'
     redirect_authenticated_user = True
@@ -39,11 +39,11 @@ class RegisterPage(FormView):
         return super(RegisterPage, self).form_valid(form)
 
 
-class Services(LoginRequiredMixin, TemplateView):
+class ServicesPage(LoginRequiredMixin, TemplateView):
     template_name = "atm/services.html"
 
 
-class CheckBalance(LoginRequiredMixin, View):
+class CheckBalancePage(LoginRequiredMixin, View):
     template = "atm/check-balance.html"
 
     def get(self, request):
@@ -51,13 +51,23 @@ class CheckBalance(LoginRequiredMixin, View):
         return render(request, self.template, {'user_balance': user_balance})
 
 
-class Deposit(LoginRequiredMixin, FormView):
+class DepositPage(LoginRequiredMixin, FormView):
     template_name = 'atm/deposit.html'
     form_class = AmountForm
     success_url = reverse_lazy('checkbalance')
 
     def form_valid(self, form):
         deposit_balance(self.request.user, form.cleaned_data['amount'])
+        return super().form_valid(form)
+
+
+class WithdrawPage(LoginRequiredMixin, FormView):
+    template_name = 'atm/withdraw.html'
+    form_class = AmountForm
+    success_url = reverse_lazy('checkbalance')
+
+    def form_valid(self, form):
+        # deposit_balance(self.request.user, form.cleaned_data['amount'])
         return super().form_valid(form)
         
     

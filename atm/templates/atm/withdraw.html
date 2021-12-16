@@ -1,0 +1,16 @@
+{% extends 'atm/base.html' %}
+{% block content %}
+
+<div class="header-bar">
+    <h1>Withdraw</h1>
+    <a href="{% url 'services' %}">&#8592; Back</a>
+</div>
+
+<div class="card-body">
+    <form method="POST" action="">
+        {% csrf_token %}
+        {{form.as_p}}
+        <input class="button" type="submit" value="Submit">
+    </form>
+</div>
+{% endblock content %}

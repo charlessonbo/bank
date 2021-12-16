@@ -27,6 +27,5 @@ def deposit_balance(user, add_balance):
 
     if not user_balance:
         create_new_balance_deposit(user, add_balance)
-        return super().form_valid(form)
-
-    update_balance_by_deposit(user_balance, add_balance)
+    else:
+        update_balance_by_deposit(user_balance, add_balance)
