@@ -40,13 +40,47 @@ def withdraw_validation(user_balance, withdraw_amount):
 def update_balance_by_withdraw(user_balance, withdraw_amount):
     user_balance.balance = float(user_balance.balance) - float(withdraw_amount)
     user_balance.save()
+    return user_balance.balance
 
 
 def withdraw(user, withdraw_amount):
     user_balance = get_balance_by_user(user)
 
     if withdraw_validation(user_balance, withdraw_amount):
-        update_balance_by_withdraw(user_balance, withdraw_amount)
-        return 'successful transaction.'
+        new_balance = update_balance_by_withdraw(user_balance, withdraw_amount)
+        return f'successful transaction. new balance is {new_balance}'
 
     return 'insufficient balance.'
+
+
+def count_bill_in_withdraw_amount(withdraw_amount, amount):
+    count = 0
+    
+    while withdraw_amount >= amount:
+        count += 1
+        withdraw_amount -= amount
+        
+    return [count, withdraw_amount]
+
+
+def break_down_of_bills(withdraw_amount):
+    #format [count the bill, amount]
+    count_bill_per_amount = [
+      [0,1000], 
+      [0,500], 
+      [0,200], 
+      [0,100], 
+      [0,50], 
+      [0,20]
+    ]
+
+    for value in count_bill_per_amount:
+        result = count_bill_in_withdraw_amount(withdraw_amount, value[1])
+        value[0] = result[0]
+        withdraw_amount = result[1]
+    
+    if  withdraw_amount > 0:
+        return None
+    else: 
+        return count_bill_per_amount
+

@@ -16,7 +16,7 @@ from .models import Balance
 from .forms import AmountForm
 from .services import get_balance_by_user
 from .services import create_new_balance_deposit, update_balance_by_deposit, deposit
-from .services import withdraw
+from .services import withdraw, break_down_of_bills
 
 class LoginPage(LoginView):
     template_name = 'atm/login.html'
@@ -68,8 +68,11 @@ class WithdrawPage(LoginRequiredMixin, FormView):
     success_url = reverse_lazy('withdraw')
 
     def form_valid(self, form):
-        message = withdraw(self.request.user, form.cleaned_data['amount'])
-        messages.success(self.request, message)
+        bill_count = break_down_of_bills(float(form.cleaned_data['amount']))
+        if bill_count:
+            # message = withdraw(self.request.user, form.cleaned_data['amount'])
+            # messages.success(self.request, message)
+            print(bill_count)
         return super().form_valid(form)
         
     
