@@ -15,7 +15,7 @@
             {% endfor %}
         </ul>
     {% endif %}
-
+    
     <form method="POST" action="">
         {% csrf_token %}
         {{form.as_p}}

@@ -12,20 +12,41 @@ def get_balance_by_user(user):
     return user_balance
 
 
-def create_new_balance_deposit(user, balance):
-    user_balance = Balance(user=user, balance=float(balance))
+def create_new_balance_deposit(user, deposit_amount):
+    user_balance = Balance(user=user, balance=float(deposit_amount))
     user_balance.save()
 
 
-def update_balance_by_deposit(user_balance, add_balance):
-    user_balance.balance = float(user_balance.balance) + float(add_balance)
+def update_balance_by_deposit(user_balance, deposit_amount):
+    user_balance.balance = float(user_balance.balance) + float(deposit_amount)
     user_balance.save()
 
 
-def deposit_balance(user, add_balance):
+def deposit(user, deposit_amount):
     user_balance = get_balance_by_user(user)
 
     if not user_balance:
-        create_new_balance_deposit(user, add_balance)
+        create_new_balance_deposit(user, deposit_amount)
     else:
-        update_balance_by_deposit(user_balance, add_balance)
+        update_balance_by_deposit(user_balance, deposit_amount)
+
+
+def withdraw_validation(user_balance, withdraw_amount):
+    if withdraw_amount <= user_balance.balance:
+        return True
+    return False
+
+
+def update_balance_by_withdraw(user_balance, withdraw_amount):
+    user_balance.balance = float(user_balance.balance) - float(withdraw_amount)
+    user_balance.save()
+
+
+def withdraw(user, withdraw_amount):
+    user_balance = get_balance_by_user(user)
+
+    if withdraw_validation(user_balance, withdraw_amount):
+        update_balance_by_withdraw(user_balance, withdraw_amount)
+        return 'successful transaction.'
+
+    return 'insufficient balance.'

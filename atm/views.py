@@ -15,8 +15,8 @@ from django.db import transaction
 from .models import Balance
 from .forms import AmountForm
 from .services import get_balance_by_user
-from .services import create_new_balance_deposit, update_balance_by_deposit, deposit_balance
-
+from .services import create_new_balance_deposit, update_balance_by_deposit, deposit
+from .services import withdraw
 
 class LoginPage(LoginView):
     template_name = 'atm/login.html'
@@ -58,7 +58,7 @@ class DepositPage(LoginRequiredMixin, FormView):
     success_url = reverse_lazy('checkbalance')
 
     def form_valid(self, form):
-        deposit_balance(self.request.user, form.cleaned_data['amount'])
+        deposit(self.request.user, form.cleaned_data['amount'])
         return super().form_valid(form)
 
 
@@ -68,8 +68,8 @@ class WithdrawPage(LoginRequiredMixin, FormView):
     success_url = reverse_lazy('withdraw')
 
     def form_valid(self, form):
-        # deposit_balance(self.request.user, form.cleaned_data['amount'])
-        messages.success(self.request, 'Form submission successful')
+        message = withdraw(self.request.user, form.cleaned_data['amount'])
+        messages.success(self.request, message)
         return super().form_valid(form)
         
     
