@@ -8,6 +8,7 @@ from django.contrib.auth.views import LoginView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
+from django.contrib import messages
 from django.views import View
 from django.shortcuts import redirect
 from django.db import transaction
@@ -64,10 +65,11 @@ class DepositPage(LoginRequiredMixin, FormView):
 class WithdrawPage(LoginRequiredMixin, FormView):
     template_name = 'atm/withdraw.html'
     form_class = AmountForm
-    success_url = reverse_lazy('checkbalance')
+    success_url = reverse_lazy('withdraw')
 
     def form_valid(self, form):
         # deposit_balance(self.request.user, form.cleaned_data['amount'])
+        messages.success(self.request, 'Form submission successful')
         return super().form_valid(form)
         
     

@@ -6,11 +6,29 @@
     <a href="{% url 'services' %}">&#8592; Back</a>
 </div>
 
+
 <div class="card-body">
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <div class="subject"> {{ message }}</div>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
     <form method="POST" action="">
         {% csrf_token %}
         {{form.as_p}}
         <input class="button" type="submit" value="Submit">
     </form>
 </div>
+
+
+<script>
+    $(document).ready(function() {
+        setTimeout(function() {
+            $(".subject").fadeOut(1500);
+        }, 2000);
+    });
+</script>
 {% endblock content %}
