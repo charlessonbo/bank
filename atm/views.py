@@ -68,31 +68,32 @@ class DepositPage(LoginRequiredMixin, FormView):
 
 @login_required
 def WithdrawPage(request):
-    bill_count = None
-    withdraw_amount = None
+    bills = count_bill = withdraw_amount = messages = None
     form = AmountForm()
 
     if request.method == 'POST':
         form = AmountForm(request.POST)
 
         if form.is_valid():
-            bill_count = break_down_of_bills(float(form.cleaned_data['amount']))
-            if not bill_count:
-                bill_count = None
-                messages.success(request, 'Failed to break down the bills.')
+            bills = break_down_of_bills(float(form.cleaned_data['amount']))
+            if not bills:
+                count_bill = None
+                messages = 'Failed to break down the bills.'
+                return render(request, 'atm/withdraw.html', {'form': form ,'messages': messages})
 
-            message = withdraw(request.user, form.cleaned_data['amount'])
-            if not message == 'insufficient balance.':
-                bill_count = bill_count
+            messages = withdraw(request.user, form.cleaned_data['amount'])
+            if not messages == 'insufficient balance.':
+                count_bill = bills
                 withdraw_amount = form.cleaned_data['amount']
-            
+
     return render(
         request, 
         'atm/withdraw.html', 
         {
             'form': form ,
-            'bill_count': bill_count,
-            'withdraw_amount': withdraw_amount
+            'bill_count': count_bill,
+            'withdraw_amount': withdraw_amount,
+            'messages': messages
         }
     )
     
