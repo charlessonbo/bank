@@ -24,13 +24,16 @@
 
     {% if bill_count %}
         <br>Cash Received<hr>
+        <h2><b>Amount: {{withdraw_amount}}</b></h2>
         {% for bill in bill_count %}
-            <div class="card">
-                <div class="container">
-                <h4><b>Amount: {{bill.amount}}</b></h4>
-                <p>Quantity: {{bill.count}}</p>
+            {% if not bill.count == 0 %}
+                <div class="card">
+                    <div class="container">
+                    <h4><b>Amount: {{bill.amount}}</b></h4>
+                    <p>Quantity: {{bill.count}}</p>
+                    </div>
                 </div>
-            </div>
+            {% endif %}
         {% endfor %}
     {% endif %}
 </div>

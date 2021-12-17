@@ -72,6 +72,7 @@ class WithdrawPage(LoginRequiredMixin, FormView):
         context = super().get_context_data(**kwargs)
         if self.plus_context:
             context['bill_count'] = self.plus_context['bill_count']
+            context['withdraw_amount'] = self.plus_context['withdraw_amount']
         return context
 
     def form_valid(self, form):
@@ -83,12 +84,13 @@ class WithdrawPage(LoginRequiredMixin, FormView):
             return super().form_valid(form)
 
         message = withdraw(self.request.user, form.cleaned_data['amount'])
+        
         if not message == 'insufficient balance.':
             self.plus_context['bill_count'] = bill_count
+            self.plus_context['withdraw_amount'] = form.cleaned_data['amount']
          
         messages.success(self.request, message)
         return super().form_valid(form)
-
     
         
     
