@@ -9,5 +9,5 @@ urlpatterns = [
     path('register/', RegisterPage.as_view(), name='register'),
     path('checkbalance/', CheckBalancePage.as_view(), name='checkbalance'),
     path('deposit/', DepositPage.as_view(), name='deposit'),
-    path('withdraw/', WithdrawPage.as_view(), name='withdraw'),
+    path('withdraw/', WithdrawPage, name='withdraw'),
 ]

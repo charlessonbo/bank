@@ -17,6 +17,10 @@ from .forms import AmountForm
 from .services import get_balance_by_user
 from .services import create_new_balance_deposit, update_balance_by_deposit, deposit
 from .services import withdraw, break_down_of_bills
+from django.contrib.auth.decorators import login_required
+import re
+from django.http import HttpResponseRedirect
+
 
 class LoginPage(LoginView):
     template_name = 'atm/login.html'
@@ -62,35 +66,35 @@ class DepositPage(LoginRequiredMixin, FormView):
         return super().form_valid(form)
 
 
-class WithdrawPage(LoginRequiredMixin, FormView):
-    template_name = 'atm/withdraw.html'
-    form_class = AmountForm
-    success_url = reverse_lazy('withdraw')
-    plus_context = dict()
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        if self.plus_context:
-            context['bill_count'] = self.plus_context['bill_count']
-            context['withdraw_amount'] = self.plus_context['withdraw_amount']
-        return context
+@login_required
+def WithdrawPage(request):
+    bill_count = None
+    withdraw_amount = None
+    form = AmountForm()
 
-    def form_valid(self, form):
-        bill_count = break_down_of_bills(float(form.cleaned_data['amount']))
+    if request.method == 'POST':
+        form = AmountForm(request.POST)
 
-        if not bill_count:
-            self.plus_context['bill_count'] = None
-            messages.success(self.request, 'Failed to break down the bills.')
-            return super().form_valid(form)
+        if form.is_valid():
+            bill_count = break_down_of_bills(float(form.cleaned_data['amount']))
+            if not bill_count:
+                bill_count = None
+                messages.success(request, 'Failed to break down the bills.')
 
-        message = withdraw(self.request.user, form.cleaned_data['amount'])
-        
-        if not message == 'insufficient balance.':
-            self.plus_context['bill_count'] = bill_count
-            self.plus_context['withdraw_amount'] = form.cleaned_data['amount']
-         
-        messages.success(self.request, message)
-        return super().form_valid(form)
+            message = withdraw(request.user, form.cleaned_data['amount'])
+            if not message == 'insufficient balance.':
+                bill_count = bill_count
+                withdraw_amount = form.cleaned_data['amount']
+            
+    return render(
+        request, 
+        'atm/withdraw.html', 
+        {
+            'form': form ,
+            'bill_count': bill_count,
+            'withdraw_amount': withdraw_amount
+        }
+    )
     
         
     
